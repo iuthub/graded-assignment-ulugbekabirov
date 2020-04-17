@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Task;
+use App\Rules\taskValidation;
+
 class TasksController extends Controller
 {
 		
@@ -31,7 +33,7 @@ class TasksController extends Controller
 			
 			return redirect()->route('getTasks')->with([
 			'tasks' => Task::all()->toArray(),
-			'info' => 'The task has been updated'. $req->input('id')
+			'info' => 'The task has been succesfully edited	'
 
 			]);
 
@@ -43,12 +45,17 @@ class TasksController extends Controller
 
     	return redirect()->route('getTasks')->with([
     		'tasks' => Task::all()->toArray(),
-    		'info' => 'The task has been deleted ' . $id
+    		'info' => 'The task has been succesfully deleted ' 
     	]);
 		} 
 
 
     public function addTask(Request $req){
+    	$validation = $this->validate($req, [
+			'name' => ['required', new taskValidation]
+		]);
+
+
     	$task = new Task();
 
     	$task->name = $req->input('name');
@@ -57,8 +64,8 @@ class TasksController extends Controller
 
     	return redirect()->route('getTasks')->with([
     		'tasks' => Task::all()->toArray(),
-    		'info' => 'The task has been added'
-    	]);
+    		'info' => 'New task has been added'
+    	])->withErrors($validation, 'task');
     	}
 
 
