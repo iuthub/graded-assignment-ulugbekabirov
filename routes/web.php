@@ -20,22 +20,26 @@ Route::get('/', [
 
 Route::get('tasks/edit/{id}',[
 'uses' => 'TasksController@editTask',
-'as' => 'editTask'
+'as' => 'editTask',
+'middleware' => 'auth'
 ]);
 
 Route::post('tasks/edit',[
 	'uses' => 'TasksController@postEditTask',
-	'as' => 'postEditTask'
+	'as' => 'postEditTask',
+	'middleware' => 'auth'
 ]);
 
 Route::get('tasks/delete/{id}',[
 'uses' => 'TasksController@deleteTask',
-'as' => 'deleteTask'
+'as' => 'deleteTask',
+'middleware' => 'auth'
 ]);
 
 Route::post('tasks/add',[
 	'uses' => 'TasksController@addTask',
-	'as' => 'addTask'
+	'as' => 'addTask',
+	'middleware' => 'auth'
 
 ]);
 Auth::routes();

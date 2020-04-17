@@ -128,6 +128,21 @@
             .addBtn:hover {
               background-color: #bbb;
             }
+
+            .auth{
+              overflow:  hidden;
+            }
+
+            .auth li {
+              float: right;
+              margin: 5px;
+              padding: 0;
+            }
+
+            .auth .nav-link{
+              text-decoration: none;
+              padding: 7px 10px;
+            }
         </style>
     </head>
     <body>

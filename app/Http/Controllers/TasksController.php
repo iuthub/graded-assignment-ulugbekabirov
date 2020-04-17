@@ -5,21 +5,36 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Task;
 use App\Rules\taskValidation;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class TasksController extends Controller
 {
 		
 		public function getTasks()
 		{
-			return view('content',[
-				'tasks'=>Task::all()->toArray()
+		$user = Auth::user();
+
+        $tasks = [];
+        if ($user != null){
+            $tasks = $user->tasks;
+        }
+
+        return view('content', [
+    		'tasks' => $tasks
 			]);
 		}
 
 
 		public function editTask($id)
 		{
-			return view('editTask',[
+		$task = Task::all()->find($id);
+        if(Gate::denies('edit-tasks', $task)) {
+            return redirect()->back()->with([
+                'error' => "You don't have permissions to edit this task."
+            ]);
+        }
+		return view('editTask',[
 				'task'=>Task::find($id)
 			]);
 
@@ -41,10 +56,19 @@ class TasksController extends Controller
 
 		public function deleteTask($id)
 		{
+		$task = Task::find($id);
+
+        if(Gate::denies('edit-tasks', $task)) {
+            return redirect()->back()->with([
+                'error' => "You don't have permissions to delete this task."
+            ]);
+        }
+
+    	$taskTitle = $task['name'];
+
 		Task::find($id)->delete();
 
     	return redirect()->route('getTasks')->with([
-    		'tasks' => Task::all()->toArray(),
     		'info' => 'The task has been succesfully deleted ' 
     	]);
 		} 
@@ -56,11 +80,16 @@ class TasksController extends Controller
 		]);
 
 
-    	$task = new Task();
+    	 $user = Auth::user();
 
-    	$task->name = $req->input('name');
-    	$task->done= false;
-    	$task->save();
+    	$task = new Task([
+            'name' => $req->input('name'),
+            'done' => false,
+
+        ]);
+
+        $user->tasks()->save($task);
+
 
     	return redirect()->route('getTasks')->with([
     		'tasks' => Task::all()->toArray(),
